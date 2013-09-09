@@ -5,7 +5,8 @@
 -module(bf).
 -export([
     compile/1,
-    example/0
+    example/0,
+    example2/0
 ]).
 
 % Read in the stream of code
@@ -42,29 +43,18 @@ compile([H|R], P, M, T) ->
 interpret($>, Pointer, Memory) ->
     NewPointer = Pointer + 1,
     NewMemory = check_pointer(NewPointer, Memory),
-    %io:format("~n~p -> ~p ~n", [NewPointer, NewMemory]),
     {NewPointer, NewMemory};
 interpret($<, Pointer, Memory) ->
     NewPointer = Pointer - 1,
     NewMemory = check_pointer(NewPointer, Memory),
-    %io:format("~n~p -> ~p ~n", [NewPointer, NewMemory]),
     {NewPointer, NewMemory};
 interpret($+, Pointer, Memory) ->
     NewMemory = increment(Pointer, Memory),
-    %io:format("~n~p -> ~p ~n", [Pointer, NewMemory]),
     {Pointer, NewMemory};
 interpret($-, Pointer, Memory) ->
     NewMemory = decrement(Pointer, Memory),
-    %io:format("~n~p -> ~p ~n", [Pointer, NewMemory]),
     {Pointer, NewMemory};
-interpret($], Pointer, Memory) ->
-    %io:format("== ] ~n"),
-    {Pointer, Memory};
-interpret($[, Pointer, Memory) ->
-    %io:format("== [ ~n"),
-    {Pointer, Memory};
 interpret($., Pointer, Memory) ->
-    %io:format("== ~p print ~p ~n", [Pointer, Memory]),
     io:format("~c", [get_value(Pointer, Memory)]),
     {Pointer, Memory};
 interpret($,, Pointer, Memory) ->
@@ -126,4 +116,10 @@ extract_memory(Pointer, Memory) ->
 example() ->
     compile(
         "++++++++++[>+++++++>++++++++++>+++>+<<<<-]>++.>+.+++++++..+++.>++.<<+++++++++++++++.>.+++.------.--------.>+.>."
+    ).
+
+% Example with nested loops
+example2() ->
+    compile(
+        "++[>++[>++>++<<.]<.]"
     ).
