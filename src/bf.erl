@@ -18,7 +18,6 @@ compile([H|T]) ->
 compile([], _, M, _) -> io:format("~p", [M]);
 % Head, Rest, Pointer, Mempory, Tape
 compile([H|R], P, M, T) ->
-    %io:format("H: ~p;R: ~p; P: ~p; M: ~p; T: ~p", [H,R,P,M,T]),
     {Tape, ToParse} = case H of
                     $[ -> 
                         % Do this till the closing matching bracket
@@ -38,7 +37,6 @@ compile([H|R], P, M, T) ->
                     _ ->
                         {T, R}
                end,
-    io:format("Tape: ~p; ToParse: ~p", [Tape,ToParse]),
     {P2,M2} = interpret(H, P, M),
     compile(ToParse, P2, M2, Tape).
 
@@ -67,7 +65,6 @@ interpret($,, Pointer, Memory) ->
     {Pointer, NewMemory};
 % Ignore all other characters
 interpret(_, Pointer, Memory) ->
-    io:format("~n"),
     {Pointer, Memory}.
 
 %
