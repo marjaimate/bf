@@ -17,15 +17,12 @@ compile([H|T]) ->
 
 compile([], _, M, _) -> io:format("~p", [M]);
 % Head, Rest, Pointer, Mempory, Tape
-compile([H|R], P, M, T) ->
-    {Tape, ToParse} = case H of
-                    $[ -> 
-                        % Do this till the closing matching bracket
-                        T2 = [R] ++ T,
-                        {T2, R};
-                    $] ->
-                        % Check if we can step out
-                        case get_value(P,M) of
+% Separate out the cases for opening and closing brackets.
+compile([$[|R], P, M, T) ->
+    {P2,M2} = interpret($[, P, M),
+    compile(R, P2, M2, [R] ++ T);
+compile([$]|R], P, M, T) ->
+    {Tape, ToParse} = case get_value(P,M) of
                             % If P value reached 0 -> step out
                             0 -> 
                                 [_|Stack] = T,
@@ -33,12 +30,12 @@ compile([H|R], P, M, T) ->
                             _ -> 
                                 [Pop|_] = T,
                                 {T,Pop}
-                        end;
-                    _ ->
-                        {T, R}
-               end,
+                        end,
+    {P2,M2} = interpret($], P, M),
+    compile(ToParse, P2, M2, Tape);
+compile([H|R], P, M, T) ->
     {P2,M2} = interpret(H, P, M),
-    compile(ToParse, P2, M2, Tape).
+    compile(R, P2, M2, T).
 
 % Trying to interpret the character
 % Memory is represented as a list.
