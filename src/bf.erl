@@ -22,19 +22,23 @@ compile([H|R], P, M, T) ->
     {Tape, ToParse} = case H of
                     $[ -> 
                         % Do this till the closing matching bracket
-                        % Set the tape - note not good enough for nested loops
-                        {R, R};
+                        T2 = [R] ++ T,
+                        {T2, R};
                     $] ->
                         % Check if we can step out
                         case get_value(P,M) of
                             % If P value reached 0 -> step out
-                            0 -> {[], R};
-                            _ -> {T,T}
+                            0 -> 
+                                [_|Stack] = T,
+                                {Stack, R};
+                            _ -> 
+                                [Pop|_] = T,
+                                {T,Pop}
                         end;
                     _ ->
                         {T, R}
                end,
-    %io:format("Tape: ~p; ToParse: ~p", [Tape,ToParse]),
+    io:format("Tape: ~p; ToParse: ~p", [Tape,ToParse]),
     {P2,M2} = interpret(H, P, M),
     compile(ToParse, P2, M2, Tape).
 
@@ -121,5 +125,5 @@ example() ->
 % Example with nested loops
 example2() ->
     compile(
-        "++[>++[>++>++<<.]<.]"
+        "++[>++[>++>++<<-.]<-.]"
     ).
