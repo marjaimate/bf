@@ -22,14 +22,11 @@ compile([$[|R], P, M, T) ->
     {P2,M2} = interpret($[, P, M),
     compile(R, P2, M2, [R] ++ T);
 compile([$]|R], P, M, T) ->
+    [Pop|Stack] = T,
     {Tape, ToParse} = case get_value(P,M) of
                             % If P value reached 0 -> step out
-                            0 -> 
-                                [_|Stack] = T,
-                                {Stack, R};
-                            _ -> 
-                                [Pop|_] = T,
-                                {T,Pop}
+                            0 -> {Stack, R};
+                            _ -> {T,Pop}
                         end,
     {P2,M2} = interpret($], P, M),
     compile(ToParse, P2, M2, Tape);
